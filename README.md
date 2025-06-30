@@ -2,6 +2,8 @@
 
 An AI-powered automation built using [n8n](https://n8n.io/) that captures expense details from a **Telegram bot** and logs them into an **Excel sheet** — smartly extracting insights using the **Gemini API**.
 
+![Workflow Screenshot](Screenshot.jpg) 
+
 ## 🚀 What It Does
 
 Whenever a user sends an expense message via Telegram (e.g., `₹200 lunch at Subway` or `Cab - ₹450`), this AI agent:
