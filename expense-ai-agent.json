@@ -1,0 +1,236 @@
+{
+  "name": "My workflow 5",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e50002ce-02a8-465e-a05f-113b0daa72ea",
+      "name": "Telegram Trigger",
+      "webhookId": "74e7efb0-36e6-4fcc-86ae-dfbb786cbda7",
+      "credentials": {
+        "telegramApi": {
+          "id": "fCUugyK7YgGWuErS",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "You are an intelligent automation agent responsible for logging expense details received via a Telegram bot into a spreadsheet.\n\nEvery time a user sends an expense message (e.g., \"₹450 lunch at Cafe Coffee Day\" or \"Taxi - ₹300\"), your job is to extract the relevant details such as amount, category, description, item, and date, then write them into a structured row in the Excel sheet.\n\n- If the expense date is not mentioned, then consider the current date and time \n- Amounts may have symbols like ₹, $, or be written as plain numbers.\n- Categories can be guessed from the message (e.g., \"uber\" → Travel, \"pizza\" → Food).\n- Ensure the Excel file is updated in real-time and saved securely.\n- For the amount, save the value in the sheet with the rupee symbol in front. If the amount is in a different currency, then convert it into Indian Rupees.\n\nAfter the expense details is saved in google sheet, always return a summary of recent expenses received.\n\nBe smart, polite, and efficient. Always prioritize accuracy in extracting and storing the expense data."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "49e1e0d8-c476-4d92-984a-6a874f081038",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        100,
+        200
+      ],
+      "id": "16ef81c0-811e-4ae5-8685-231eb48d07fe",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "jMYNqp4zBw95HXGZ",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        320,
+        220
+      ],
+      "id": "08105890-c074-4dc6-b68d-d46ea0789f80",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1zpWXB-40ippstWNc7_zdemeN-3j4TVHK6vOUsWOqIwU",
+          "mode": "list",
+          "cachedResultName": "n8n Expense ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zpWXB-40ippstWNc7_zdemeN-3j4TVHK6vOUsWOqIwU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zpWXB-40ippstWNc7_zdemeN-3j4TVHK6vOUsWOqIwU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $now }}",
+            "Iteam": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Iteam', ``, 'string') }}",
+            "Amount": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Amount', ``, 'string') }}",
+            "Category": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Category', ``, 'string') }}",
+            "Description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Iteam",
+              "displayName": "Iteam",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Amount",
+              "displayName": "Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        480,
+        220
+      ],
+      "id": "c7a47ec9-f963-47c0-8d4e-6ca282a77714",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DO0Tt0O4v8yljShQ",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3262f5aa-8a4d-4c8a-a03a-561f418f7e8b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b7eb4a943a8a239f1ed174cb2203e35cd298b6bc9ce482a7c8f8fded0e43e16c"
+  },
+  "id": "Vhc74DVcM8lBzbs0",
+  "tags": []
+}
